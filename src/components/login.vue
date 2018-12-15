@@ -47,6 +47,10 @@ export default{
 	},
 	methods:{
 		login_begin(){
+			// this.$axios.post('http://192.168.108.24:8089/manager/managerLogin',{
+			// accountNumber:123,
+			// password:456
+			// });
 			this.$router.push('/system');
 		}
 	}

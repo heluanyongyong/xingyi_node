@@ -3,11 +3,11 @@
 		<div class="title">开服表</div>
 		<div class="searchs">
 			<label for="search_content">
-				内容查询：<el-input id="search_content" v-model="search_content" placeholder="请输入要查询的内容"></el-input>
+				游戏名称：<el-input clearable id="search_content" v-model="search_content" placeholder="请输入要查询的游戏名称"></el-input>
 			</label>
-			<el-button class="mr25" type="primary" icon="el-icon-search">查询</el-button>
+			<el-button class="mr25" type="primary" icon="el-icon-search" @click="getData">查询</el-button>
 			<label for="is_show">
-				是否显示：<el-select v-model="is_show" placeholder="是否显示">
+				是否显示：<el-select clearable v-model="is_show" placeholder="是否显示">
 					<el-option
 						id="is_show"
 						v-for="item in is_shows"
@@ -16,7 +16,9 @@
 					</el-option>
 				</el-select>
 			</label>
-			<el-button type="success" class="add_btn" @click="dialog_show=true;dialog_type='添加开服表'">添加</el-button>
+			<timeSearchComponent @change_time="change_searchTime"></timeSearchComponent>
+			<el-button class="mr25" type="primary" icon="el-icon-search" @click="getData">查询</el-button>
+			<el-button type="success" class="add_btn" @click="add">添加</el-button>
 		</div>
 		<table class="main_table">
 			<thead>
@@ -30,34 +32,31 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr v-for="item in 10">
-					<td>1000001</td>
-					<td>王者归来</td>
-					<td>一区</td>
-					<td>2018-11-16 17:51:20</td>
-					<td>否</td>
-					<td><el-button size="mini" type="warning" icon="el-icon-edit" @click="dialog_show=true;dialog_type='修改开服表'">修改</el-button></td>
+				<tr v-for="item in dataList">
+					<td>{{item.gameBeginId}}</td>
+					<td>{{item.gameName}}</td>
+					<td>{{item.deptName}}</td>
+					<td>{{item.beginTime|filter_time}}</td>
+					<td>{{item.isShow}}</td>
+					<td><el-button size="mini" type="warning" icon="el-icon-edit" @click="modify(item)">修改</el-button></td>
 				</tr>
 			</tbody>
 			<tfoot>
 				<tr>
 					<td colspan="11">
-						<el-pagination
-							background
-							layout="prev, pager, next"
-							:total="1000">
-						</el-pagination>
+						<!-- 分页组件 -->
+						<pagesComponent :pages="pages" @change_page="change_page"></pagesComponent>
 					</td>
 				</tr>
 			</tfoot>
 		</table>
 		<el-dialog
 			title="开服表"
-			:visible.sync="dialog_show"
+			:visible.sync="dialogShow"
 			width="30%"
 			center>
 			<table class="mini">
-				<caption>{{dialog_type}}</caption>
+				<caption>{{dialogType}}</caption>
 				<tr>
 					<td>游戏名称</td>
 					<td><el-input v-model="game_name" placeholder="请输入游戏名称"></el-input></td>
@@ -72,7 +71,8 @@
 						<el-date-picker
 							v-model="start_time"
 							type="datetime"
-							placeholder="选择开服时间">
+							placeholder="选择开服时间"
+							value-format="yyyy-MM-dd HH:mm:ss">
 						</el-date-picker>
 					</td>
 				</tr>
@@ -92,34 +92,107 @@
 			</table>
 			<span slot="footer" class="dialog-footer">
 				<el-button type="primary" @click="submit">提交</el-button>
-				<el-button @click="dialog_show = false">关闭</el-button>
+				<el-button @click="dialogShow = false">关闭</el-button>
 			</span>
 		</el-dialog>
 	</div>
 </template>
 <script>
+import pagesComponent from '@/public/pages.vue';
+import timeSearchComponent from '@/public/timeSearch.vue';
+import {public_data} from '@/public/mixins.js';
 export default{
+	components:{
+		pagesComponent:pagesComponent,
+		timeSearchComponent:timeSearchComponent,
+	},
+	mixins:[public_data],
 	data(){
 		return{
 			search_content:'',//查询的内容
+			time:'',//查询的时间
 			is_show:'',//搜索当前是否显示
 			is_show_dialog:'',//模态框当前是否显示
 			is_shows:['是','否'],//全部是否显示
-			dialog_show:false,//模态框是否显示
-			dialog_type:'',//当前模态框标题
 			game_name:'',// 游戏名称
 			game_newDept:'',//新服名称
 			start_time:'',//开服时间
+			modify_proxy:[],//点击修改模态框、保存相应数据
 		}
 	},
 	methods:{
+		getData(){
+			this.$axios.get(`/infos/game_begin_get
+				?page=${this.page}
+				&time=${this.time}
+				&isShow=${this.is_show}
+				&gameName=${this.search_content}`).then((res)=>{
+					this.dataList=res.data.rows;
+					this.pages=res.data.pages;
+				}).catch((err)=>{
+					console.log(err);
+				});
+		},
+		add(){
+			this.modal_init();
+			this.dialogShow=true;
+			this.dialogType='添加开服表';
+		},
+		modify(data){
+			this.modal_init();
+			this.modify_proxy=data;
+			this.game_name=data.gameName;
+			this.game_newDept=data.deptName;
+			this.start_time=data.beginTime.split('T')[0]+' '+new Date(data.beginTime).toTimeString().split(' ')[0];
+			this.is_show_dialog=data.isShow;
+			this.dialogShow=true;
+			this.dialogType='修改开服表';
+		},
+		modal_init(){
+			this.game_name='';
+			this.game_newDept='';
+			this.start_time='';
+			this.is_show_dialog='';
+		},
 		submit(){
-			this.dialog_show=false;
-			var str=this.dialog_type.substring(0,2);
-			this.$message({
-	          	message: `${str}成功！`,
-	          	type: 'success'
-	        });
+			// 前端验证
+			if(this.game_name==''||this.is_show_dialog==''){
+				this.$message({
+		          	message: `操作失败！游戏名称和是否显示都不可以为空`,
+		          	type: 'warning'
+		        });
+				return;
+			}
+			if(this.dialogType=='添加开服表'){
+				var url='/infos/game_begin_add';
+				var data={
+					gameName:this.game_name,
+					deptName:this.game_newDept,
+					beginTime:this.start_time,
+					isShow:this.is_show_dialog
+				}
+			}else{
+				var url='/infos/game_begin_modify';
+				// 需要转换一下默认时间
+				var data={
+					gameBeginId:this.modify_proxy.gameBeginId,
+					gameName:this.game_name,
+					deptName:this.game_newDept,
+					beginTime:this.start_time,
+					isShow:this.is_show_dialog
+				}
+			}
+			this.$axios.post(url,this.$qs.stringify(data)).then((res)=>{
+				this.dialogShow=false;
+				var str=this.dialogType.substring(0,2);
+				this.$message({
+		          	message: `${str}成功！`,
+		          	type: 'success'
+		        });
+		        this.getData();
+			}).catch((err)=>{
+				console.log(err);
+			});
 		}
 	}
 }

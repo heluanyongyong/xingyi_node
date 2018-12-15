@@ -16,6 +16,7 @@
 					</el-option>
 				</el-select>
 			</label>
+			<el-button class="mr25" type="primary" icon="el-icon-search">查询</el-button>
 			<el-button type="success" class="add_btn" @click="dialog_show=true;dialog_type='添加金额'">添加</el-button>
 		</div>
 		<table class="main_table">

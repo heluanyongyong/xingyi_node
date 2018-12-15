@@ -15,9 +15,10 @@
 			background-color="#444"
 			text-color="#fff"
 			:router="true"
-			active-text-color="#ffd04b">
+			active-text-color="#ffd04b"
+			:default-active="$route.path">
 			<div class="high"></div>
-			<el-menu-item index="/system">
+			<el-menu-item index="/system/index">
 		    	<i class="el-icon-setting"></i>
 		    	<span slot="title">首页</span>
 		  	</el-menu-item>
@@ -103,6 +104,10 @@ auto_width=250px
 </style>
 <script>
 export default{
+	data(){
+		return{
+		}
+	},
 	methods:{
 		handleOpen(key, keyPath) {
 			console.log(key, keyPath);
@@ -113,6 +118,12 @@ export default{
 		hello(){
 			console.log('hello world');
 		}
-	}
+	},
+	watch:{
+		$route(to,from){
+			var route=to.path;
+
+		}
+	},
 }
 </script>

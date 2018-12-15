@@ -32,20 +32,22 @@
 			<thead>
 				<tr>
 					<td>ID</td>
-					<td>游戏名称</td>
-					<td>新服名称</td>
-					<td>开服时间</td>
-					<td>是否显示</td>
+					<td>公司名称</td>
+					<td>姓名</td>
+					<td>电话</td>
+					<td>时间</td>
+					<td>状态</td>
 					<td>操作</td>
 				</tr>
 			</thead>
 			<tbody>
 				<tr v-for="item in 10">
 					<td>1000001</td>
-					<td>王者归来</td>
-					<td>一区</td>
+					<td>深圳星移网络科技有限公司</td>
+					<td>xiaobai</td>
+					<td>132132231321</td>
 					<td>2018-11-16 17:51:20</td>
-					<td>否</td>
+					<td>未读</td>
 					<td><el-button size="mini" type="primary" icon="el-icon-search" @click="dialog_show=true">查看详情</el-button></td>
 				</tr>
 			</tbody>
