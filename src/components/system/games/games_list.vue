@@ -336,20 +336,14 @@
 					</tr>
 					<!-- 游戏壁纸 -->
 					<tr>
-						<td>游戏壁纸</td>
-						<td colspan="2">游戏壁纸大图</td>
+						<td colspan="3">游戏壁纸</td>
 						<td>操作</td>
 					</tr>
 					<tr v-for="(item,index) in gameWallpaper" class="gameWallpaper">
-						<td>
+						<td colspan="3">
 							<input :id="`gamePics${index}`" type="file" @change="change_file_img(`gamePics${index}`,`selectImgbs${index}`)">
 							<img v-if="dialogType=='新增游戏'" :class="`selectImgbs${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gamePics${index}`)">
 							<img v-if="dialogType=='修改游戏'" :class="`selectImgbs${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gamePics${index}`)">
-						</td>
-						<td colspan="2">
-							<input :id="`gamePicl${index}`" type="file" @change="change_file_img(`gamePicl${index}`,`selectImgbl${index}`)">
-							<img v-if="dialogType=='新增游戏'" :class="`selectImgbl${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gamePicl${index}`)">
-							<img v-if="dialogType=='修改游戏'" :class="`selectImgbl${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gamePicl${index}`)">
 						</td>
 						<td>
 							<el-button type="success" @click="publicAdd('gameWallpaper',index)">新增</el-button>
@@ -358,20 +352,14 @@
 					</tr>
 					<!-- 游戏截图 -->
 					<tr>
-						<td>游戏截图</td>
-						<td colspan="2">游戏截图大图</td>
+						<td colspan="3">游戏截图</td>
 						<td>操作</td>
 					</tr>
 					<tr v-for="(item,index) in gameScreenshot" class="gameScreenshot">
-						<td>
+						<td colspan="3">
 							<input :id="`gameScreenshots${index}`" type="file" @change="change_file_img(`gameScreenshots${index}`,`selectImgcs${index}`)">
 							<img v-if="dialogType=='新增游戏'" :class="`selectImgcs${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gameScreenshots${index}`)">
 							<img v-if="dialogType=='修改游戏'" :class="`selectImgcs${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gameScreenshots${index}`)">
-						</td>
-						<td colspan="2">
-							<input :id="`gameScreenshotl${index}`" type="file" @change="change_file_img(`gameScreenshotl${index}`,`selectImgcl${index}`)">
-							<img v-if="dialogType=='新增游戏'" :class="`selectImgcl${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gameScreenshotl${index}`)">
-							<img v-if="dialogType=='修改游戏'" :class="`selectImgcl${index}`" src="static/games_list/add.png" alt="hello world" @click="pic_click(`gameScreenshotl${index}`)">
 						</td>
 						<td>
 							<el-button type="success" @click="publicAdd('gameScreenshot',index)">新增</el-button>
@@ -552,14 +540,10 @@ export default{
 		publicDel(source,index){
 			if(source=='gameWallpaper'){
 				$(`#gamePics${index}`).val('');
-				$(`#gamePicl${index}`).val('');
 				$(`.selectImgbs${index}`).attr('src','static/games_list/add.png');
-				$(`.selectImgbl${index}`).attr('src','static/games_list/add.png');
 			}else if(source=='gameScreenshot'){
 				$(`#gameScreenshots${index}`).val('');
-				$(`#gameScreenshotl${index}`).val('');
 				$(`.selectImgcs${index}`).attr('src','static/games_list/add.png');
-				$(`.selectImgcl${index}`).attr('src','static/games_list/add.png');
 			}else if(source=='roleInfos'){
 				$(`#gameInfoImg${index}`).val('');
 				$(`.selectImga${index}`).attr('src','static/games_list/add.png');
@@ -606,17 +590,15 @@ export default{
 			for(var i=0;i<length;i++){
 				this.imgsId_collection(`gameInfoImg${i}`,'role');
 			}
-			// 存储参数--游戏壁纸和游戏壁纸大图
+			// 存储参数--游戏壁纸
 			var length=$('.gameWallpaper').length;
 			for(var i=0;i<length;i++){
 				this.imgsId_collection(`gamePics${i}`,'wallpaper');
-				this.imgsId_collection(`gamePicl${i}`,'wallpaper_large');
 			}
-			// 存储参数--游戏截图和游戏截图大图
+			// 存储参数--游戏截图
 			var length=$('.gameScreenshot').length;
 			for(var i=0;i<length;i++){
 				this.imgsId_collection(`gameScreenshots${i}`,'screenshot');
-				this.imgsId_collection(`gameScreenshotl${i}`,'screenshot_large');
 			}
 			// oss账户信息
 			var client = new OSS.Wrapper({
@@ -662,9 +644,7 @@ export default{
 			var gameIcon,linkEwm,miniPic,gameBackground='';
 			var roleInfoImg=[];
 			var gameWallpapers=[];
-			var gameWallpaperl=[];
 			var gameScreenshots=[];
-			var gameScreenshotl=[];
 			this.imgsContent.forEach((data)=>{
 				if(data.type=='gameIcon'){
 					gameIcon=data.url;
@@ -680,15 +660,9 @@ export default{
 				}else if(data.type.includes('gamePics')){
 					let str=data.type.split('gamePics')[1];
 					gameWallpapers[str]=data.url;
-				}else if(data.type.includes('gamePicl')){
-					let str=data.type.split('gamePicl')[1];
-					gameWallpaperl[str]=data.url;
 				}else if(data.type.includes('gameScreenshots')){
 					let str=data.type.split('gameScreenshots')[1];
 					gameScreenshots[str]=data.url;
-				}else if(data.type.includes('gameScreenshotl')){
-					let str=data.type.split('gameScreenshotl')[1];
-					gameScreenshotl[str]=data.url;
 				}
 			});
 			if(this.gameClass=='网页游戏'){
@@ -714,9 +688,7 @@ export default{
 				featureGameplay:this.featureGameplay,
 				roleInfos:this.roleInfos,
 				gameWallpapers:gameWallpapers.length==0?'':gameWallpapers,
-				gameWallpaperl:gameWallpaperl.length==0?'':gameWallpaperl,
-				gameScreenshots:gameScreenshots.length==0?'':gameScreenshots,
-				gameScreenshotl:gameScreenshotl.length==0?'':gameScreenshotl
+				gameScreenshots:gameScreenshots.length==0?'':gameScreenshots
 			})).then((res)=>{
 				// 返回信息
 				this.dialogShow=false;
